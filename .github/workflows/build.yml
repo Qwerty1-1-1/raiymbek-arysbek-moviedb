@@ -1,0 +1,37 @@
+name: Build iOS Simulator app
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Unpack project
+        run: unzip -q MovieDB-Search.zip -d project
+      - name: Resolve Swift packages
+        working-directory: project/MovieDB CSS214 03-N
+        run: xcodebuild -resolvePackageDependencies -project 'MovieDB CSS214 03-N.xcodeproj'
+      - name: Build unsigned simulator app
+        working-directory: project/MovieDB CSS214 03-N
+        run: |
+          xcodebuild build \
+            -project 'MovieDB CSS214 03-N.xcodeproj' \
+            -scheme 'MovieDB CSS214 03-N' \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY='' \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+      - name: Zip simulator app
+        run: |
+          mkdir -p artifact
+          APP=$(find 'project/MovieDB CSS214 03-N/build/Build/Products/Debug-iphonesimulator' -maxdepth 1 -name '*.app' -print -quit)
+          test -n "$APP"
+          ditto -c -k --sequesterRsrc --keepParent "$APP" artifact/MovieDB-Search-Simulator.zip
+      - name: Upload simulator app
+        uses: actions/upload-artifact@v4
+        with:
+          name: MovieDB-Search-Simulator
+          path: artifact/MovieDB-Search-Simulator.zip
