@@ -9,8 +9,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Unpack project
-        run: unzip -q MovieDB-Search.zip -d project
+      - name: Unpack fixed project
+        run: unzip -q MovieDB-Search-fixed.zip -d project
       - name: Resolve Swift packages
         working-directory: project/MovieDB CSS214 03-N
         run: xcodebuild -resolvePackageDependencies -project 'MovieDB CSS214 03-N.xcodeproj'
